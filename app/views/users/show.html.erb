@@ -15,6 +15,7 @@
             </li>
             <li>
               <%= link_to t(".my notes"), user_notes_path(@user) %>
+              <span class='count-number'><%= number_with_delimiter(current_user.notes.size) %></span>
             </li>
             <li>
               <%= link_to t(".my traces"), :controller => "traces", :action => "mine" %>
