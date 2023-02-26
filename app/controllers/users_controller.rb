@@ -47,6 +47,25 @@ class UsersController < ApplicationController
     if @user &&
        (@user.visible? || current_user&.administrator?)
       @title = @user.display_name
+
+      @og_tags = {
+        "og:type" => "person",
+        # helpers.user_image_url is a hack, and should be done Properly™
+        "og:image" => helpers.user_image_url(@user),
+        "og:image:secure_url" => helpers.user_image_url(@user),
+        # user_image_url returns a 100×100 image
+        "og:image:width" => "100",
+        "og:image:height" => "100",
+        # TODO: locale to the users langauage(s)?
+
+        # Should/Could this be translated?
+        "og:image:alt" => "Profile image of #{@user.display_name} on OpenStreetMap.org",
+
+        # Better is to translate “mapper since” (etc) to this users language.
+        # Including the entire body sounds bad. Arbitrarily choose 300 chars as the limit.
+        # It would be better to strip out all HTML, or Markdown, syntax here.
+        "og:description" => "#{t '.mapper since'} #{l(@user.created_at.to_date, :format => :long)}. #{t '.edits'}: #{@user.changesets.size}. “#{@user.description.to_text[0..300]}”"
+      }
     else
       render_unknown_user params[:display_name]
     end
